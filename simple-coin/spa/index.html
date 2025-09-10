@@ -1,171 +1,115 @@
-<!DOCTYPE html><html lang="ko" class="__className_fde3a9 size-full"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="/_next/static/css/2e677674121e02c0.css" data-precedence="next"/><link rel="preload" as="script" fetchPriority="low" href="/_next/static/chunks/webpack-2d2dc68beef0c482.js"/><script src="/_next/static/chunks/80433fe4-e24eaad93a1cfb9d.js" async=""></script><script src="/_next/static/chunks/367-0ec4dc94cb811371.js" async=""></script><script src="/_next/static/chunks/main-app-f1b4d9826ef8e891.js" async=""></script><script src="/_next/static/chunks/dd507964-94e7a1153960be03.js" async=""></script><script src="/_next/static/chunks/b706f4b1-2831010e2dd2a749.js" async=""></script><script src="/_next/static/chunks/73dfd616-512978e649b76761.js" async=""></script><script src="/_next/static/chunks/963-4dffbac8d6a25e78.js" async=""></script><script src="/_next/static/chunks/679-d1a6a81af7b7551a.js" async=""></script><script src="/_next/static/chunks/app/layout-725688826163538f.js" async=""></script><script src="/_next/static/chunks/app/error-b5faafca2308edb7.js" async=""></script><script src="/_next/static/chunks/app/simple-coin/%5Bid%5D/page-180348f7e7a038cd.js" async=""></script><title>블록체인 &amp; 암호화폐 원리와 simple coin 구현 가이드 | JongMin Chae</title><meta name="description" content="JongMin Chae 개인 블록"/><link rel="icon" href="/images/spyglass.png"/><script src="/_next/static/chunks/polyfills-42372ed130431b0a.js" noModule=""></script></head><body class="relative size-full"><header class="fixed top-0 z-50 flex h-12 w-full items-center border-gray-200 bg-white/95 pl-10 backdrop-blur-sm"><div class="flex items-center gap-2"><a href="/"><span>JongMin Chae</span></a><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16" class="size-3" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm5-1v12h9a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1zM4 2H2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h2z"></path></svg></div></header><div dir="ltr" class="relative overflow-hidden" style="position:relative;--radix-scroll-area-corner-width:0px;--radix-scroll-area-corner-height:0px"><style>[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}</style><div data-radix-scroll-area-viewport="" class="size-full rounded-[inherit]" style="overflow-x:hidden;overflow-y:hidden"><div style="min-width:100%;display:table"><main class="size-full transition-all duration-300 ease-out pl-0 overflow-x-hidden pt-12"><div class="mx-auto max-w-6xl p-8"><article class="prose !max-w-full"><h1>간단한 SPA 웹페이지 구현</h1>
-<p>블록체인 네트워크의 상태를 실시간으로 확인할 수 있는 웹 인터페이스입니다.</p>
-<h2>SPA 아키텍처</h2>
-<p>Single Page Application의 기본 구조:</p>
-<pre><code class="language-javascript">function BlockchainDashboard() {
-  const [blocks, setBlocks] = useState([])
-  const [transactions, setTransactions] = useState([])
-  const [networkStats, setNetworkStats] = useState({})
-
-  useEffect(() =&gt; {
-    fetchBlockchainData()
-    const interval = setInterval(fetchBlockchainData, 10000) // 10초마다 갱신
-    return () =&gt; clearInterval(interval)
-  }, [])
-
-  return (
-    &lt;div className=&quot;dashboard&quot;&gt;
-      &lt;Header /&gt;
-      &lt;NetworkStats stats={networkStats} /&gt;
-      &lt;BlockList blocks={blocks} /&gt;
-      &lt;TransactionList transactions={transactions} /&gt;
-    &lt;/div&gt;
-  )
-}
+<!DOCTYPE html><html lang="ko" class="__className_fde3a9 size-full"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="preload" as="image" href="https://github.com/user-attachments/assets/5f6acc1b-d28d-4f8c-a1b4-c4a09c27bc09"/><link rel="preload" as="image" href="https://github.com/user-attachments/assets/b86f67f2-cf20-4cc9-a72c-4875542a84a6"/><link rel="preload" as="image" href="https://github.com/user-attachments/assets/5a299a08-b5b8-41b5-af90-b62fee206bf3"/><link rel="preload" as="image" href="https://github.com/user-attachments/assets/622fe360-a7a3-49b6-b20b-ddf78103eda3"/><link rel="stylesheet" href="/_next/static/css/aa5c0cfdd8dfd8bd.css" data-precedence="next"/><link rel="preload" as="script" fetchPriority="low" href="/_next/static/chunks/webpack-2d2dc68beef0c482.js"/><script src="/_next/static/chunks/80433fe4-e24eaad93a1cfb9d.js" async=""></script><script src="/_next/static/chunks/367-0ec4dc94cb811371.js" async=""></script><script src="/_next/static/chunks/main-app-f1b4d9826ef8e891.js" async=""></script><script src="/_next/static/chunks/dd507964-94e7a1153960be03.js" async=""></script><script src="/_next/static/chunks/b706f4b1-2831010e2dd2a749.js" async=""></script><script src="/_next/static/chunks/73dfd616-512978e649b76761.js" async=""></script><script src="/_next/static/chunks/963-4dffbac8d6a25e78.js" async=""></script><script src="/_next/static/chunks/679-d1a6a81af7b7551a.js" async=""></script><script src="/_next/static/chunks/app/layout-eb3ccd7f5c20da6c.js" async=""></script><script src="/_next/static/chunks/app/error-b5faafca2308edb7.js" async=""></script><script src="/_next/static/chunks/app/simple-coin/%5Bid%5D/page-180348f7e7a038cd.js" async=""></script><title>블록체인 &amp; 암호화폐 원리와 simple coin 구현 가이드 | JongMin Chae</title><meta name="description" content="JongMin Chae 개인 블록"/><link rel="icon" href="/images/spyglass.png"/><script src="/_next/static/chunks/polyfills-42372ed130431b0a.js" noModule=""></script></head><body class="relative size-full"><header class="fixed top-0 z-50 flex h-12 w-full items-center border-gray-200 bg-white/95 pl-10 backdrop-blur-sm"><div class="flex items-center gap-2"><a href="/"><span>JongMin Chae</span></a><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16" class="size-3" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm5-1v12h9a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1zM4 2H2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h2z"></path></svg></div></header><div dir="ltr" class="relative overflow-hidden" style="position:relative;--radix-scroll-area-corner-width:0px;--radix-scroll-area-corner-height:0px"><style>[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}</style><div data-radix-scroll-area-viewport="" class="size-full rounded-[inherit]" style="overflow-x:hidden;overflow-y:hidden"><div style="min-width:100%;display:table"><main class="size-full transition-all duration-300 ease-out pl-0 overflow-x-hidden pt-12"><div class="mx-auto max-w-6xl p-8"><article class="prose !max-w-full"><h1>Simple SPA</h1>
+<p>현재 CLI를 통하여 거래를 만들고 블록을 채굴할 수 있습니다. 그러나 CLI에 명령어를 치는 것보다 UI를 통하여 사용하면 더 편하겠죠? SPA(Single Page Application)를 도입해 사용성을 개선해 봅시다.</p>
+<h2>SPA(Single Page Application)이란?</h2>
+<p>SPA(싱글 페이지 애플리케이션)는 전통적인 다중 페이지 방식(Multi-Page Application, MPA)과 달리
+초기 로드 시 하나의 HTML 페이지와 자바스크립트 번들을 받아온 뒤,
+이후의 화면 전환은 서버로부터 전체 페이지를 다시 로드하지 않고 클라이언트(브라우저)에서 자바스크립트로 라우팅과 뷰 업데이트를 처리하는 웹 애플리케이션입니다.</p>
+<h3>SPA의 동작 원리 (간단히)</h3>
+<ol>
+<li>사용자가 앱에 접속하면 초기 HTML/CSS/JS 번들을 로드합니다.</li>
+<li>URL을 감지하여 적절한 컴포넌트를 렌더링합니다.</li>
+</ol>
+<h2>요구사항</h2>
+<h3>home(&quot;/&quot;)</h3>
+<p>explorer로 이동하는 버튼
+wallet으로 이동하는 버튼
+간단한 설명</p>
+<img width="" height="" alt="image" src="https://github.com/user-attachments/assets/5f6acc1b-d28d-4f8c-a1b4-c4a09c27bc09"/>
+<h3>explorer(&quot;/explorer&quot;)</h3>
+<p>블록체인 확인<br/>
+<!-- -->블록 검색 bt index or hash</p>
+<img width="" height="" alt="image" src="https://github.com/user-attachments/assets/b86f67f2-cf20-4cc9-a72c-4875542a84a6"/>
+<h3>wallet(&quot;/wallet&quot;)</h3>
+<p>잔고 확인<br/>
+<!-- -->주소 확인<br/>
+<!-- -->코인 보내기</p>
+<img width="" height="" alt="image" src="https://github.com/user-attachments/assets/5a299a08-b5b8-41b5-af90-b62fee206bf3"/>
+<h3>mempool &amp; peers &amp; mining(explorer와 wallet 페이지 하단)</h3>
+<p>mempool 확인<br/>
+<!-- -->연결된 노드 확인<br/>
+<!-- -->블록 채굴(mempool transaction 블록에 담기)</p>
+<img width="" height="" alt="image" src="https://github.com/user-attachments/assets/622fe360-a7a3-49b6-b20b-ddf78103eda3"/>
+<h2>SPA를 위한 endpoints</h2>
+<p>SPA(Single Page Application)을 지원하기 위해 Express 서버에서 라우팅을 처리하는 방식입니다.</p>
+<h3>정적 파일 제공</h3>
+<p><code>public</code> 디렉토리를 정적 파일 제공 폴더로 지정합니다. 따라서 html, JS 같은 정적 자원은 별도의 라우팅 없이 자동으로 서비스됩니다.</p>
+<pre><code class="language-ts">app.use(express.static(path.join(__dirname, &#x27;..&#x27;, &#x27;public&#x27;)))
 </code></pre>
-<h2>실시간 데이터 관리</h2>
-<p>WebSocket을 활용한 실시간 데이터 업데이트:</p>
-<pre><code class="language-javascript">useEffect(() =&gt; {
-  const ws = new WebSocket(&#x27;ws://localhost:8080&#x27;)
+<h3>모든 경로를 index.html로 처리</h3>
+<pre><code class="language-ts">app.get(&#x27;/explorer&#x27;, (req, res) =&gt; {
+  res.sendFile(path.join(__dirname, &#x27;..&#x27;, &#x27;public&#x27;, &#x27;index.html&#x27;))
+})
 
-  ws.onmessage = (event) =&gt; {
-    const data = JSON.parse(event.data)
-    if (data.type === &#x27;new_block&#x27;) {
-      setBlocks((prev) =&gt; [data.block, ...prev])
-    } else if (data.type === &#x27;new_transaction&#x27;) {
-      setTransactions((prev) =&gt; [data.transaction, ...prev])
-    }
-  }
+app.get(&#x27;/wallet&#x27;, (req, res) =&gt; {
+  res.sendFile(path.join(__dirname, &#x27;..&#x27;, &#x27;public&#x27;, &#x27;index.html&#x27;))
+})
+</code></pre>
+<p>👉 사용자가 <code>/explorer</code>, <code>/wallet</code> 경로로 접근했을 때, 실제 서버에 <code>/explorer.html</code>와 <code>/wallet.html</code>이 아닌 <code>index.html</code>을 응답으로 줍니다. SPA는 index.html 안에서 해당 경로에 맞는 컴포넌트를 렌더링합니다.</p>
+<pre><code class="language-ts">app.get(&#x27;/wallet&#x27;, (req, res) =&gt; {
+  res.sendFile(path.join(__dirname, &#x27;..&#x27;, &#x27;public&#x27;, &#x27;index.html&#x27;))
+})
+</code></pre>
+<h2>정적 파일(html, js)</h2>
+<h3>tailwind css</h3>
+<p>디자인은 tailwind를 사용하고 CDN을 통해 가져옵니다.</p>
+<pre><code class="language-html">&lt;!-- index.html --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;!-- tailwind --&gt;
+    &lt;script src=&quot;https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4&quot;&gt;&lt;/script&gt;
+    &lt;title&gt;Simple Coin&lt;/title&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot; /&gt;
+  &lt;/head&gt;
+  &lt;body class=&quot;bg-white min-h-screen&quot;&gt;
+    .....
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<h3>html</h3>
+<p>모든 경로의 UI를 작성 후 차후 자바스크립트로 해당 경로에 해당하는 컴포넌트를 js로 렌더링합니다.</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    ...
+  &lt;/head&gt;
+  &lt;body class=&quot;bg-white min-h-screen&quot;&gt;
+    &lt;!-- Header --&gt;
+    &lt;header class=&quot;bg-gray-50 shadow-md border-b border-gray-300&quot;&gt;...&lt;/header&gt;
 
-  return () =&gt; ws.close()
-}, [])
-</code></pre>
-<h2>컴포넌트 구조</h2>
-<h3>네트워크 통계 컴포넌트</h3>
-<pre><code class="language-javascript">function NetworkStats({ stats }) {
-  return (
-    &lt;div className=&quot;stats-grid&quot;&gt;
-      &lt;StatCard title=&quot;블록 높이&quot; value={stats.blockHeight} /&gt;
-      &lt;StatCard title=&quot;총 트랜잭션&quot; value={stats.totalTransactions} /&gt;
-      &lt;StatCard title=&quot;네트워크 해시레이트&quot; value={stats.hashRate} /&gt;
-      &lt;StatCard title=&quot;연결된 노드&quot; value={stats.connectedNodes} /&gt;
-    &lt;/div&gt;
-  )
-}
-</code></pre>
-<h3>블록 리스트 컴포넌트</h3>
-<pre><code class="language-javascript">function BlockList({ blocks }) {
-  return (
-    &lt;div className=&quot;block-list&quot;&gt;
-      &lt;h3&gt;최근 블록들&lt;/h3&gt;
-      {blocks.map((block) =&gt; (
-        &lt;BlockCard key={block.hash} block={block} /&gt;
-      ))}
-    &lt;/div&gt;
-  )
-}
-</code></pre>
-<h3>트랜잭션 리스트 컴포넌트</h3>
-<pre><code class="language-javascript">function TransactionList({ transactions }) {
-  return (
-    &lt;div className=&quot;transaction-list&quot;&gt;
-      &lt;h3&gt;최근 트랜잭션들&lt;/h3&gt;
-      {transactions.map((tx) =&gt; (
-        &lt;TransactionCard key={tx.id} transaction={tx} /&gt;
-      ))}
-    &lt;/div&gt;
-  )
-}
-</code></pre>
-<h2>상태 관리</h2>
-<p>React의 useReducer를 활용한 복잡한 상태 관리:</p>
-<pre><code class="language-javascript">const initialState = {
-  blocks: [],
-  transactions: [],
-  loading: false,
-  error: null,
-}
+    &lt;!-- Home Page --&gt;
+    &lt;div id=&quot;homePage&quot; class=&quot;page active&quot;&gt;...&lt;/div&gt;
 
-function blockchainReducer(state, action) {
-  switch (action.type) {
-    case &#x27;FETCH_START&#x27;:
-      return { ...state, loading: true }
-    case &#x27;FETCH_SUCCESS&#x27;:
-      return {
-        ...state,
-        loading: false,
-        blocks: action.payload.blocks,
-        transactions: action.payload.transactions,
-      }
-    case &#x27;FETCH_ERROR&#x27;:
-      return { ...state, loading: false, error: action.payload }
-    default:
-      return state
-  }
-}
+    &lt;!-- Explorer Page --&gt;
+    &lt;div id=&quot;explorerPage&quot; class=&quot;page&quot;&gt;...&lt;/div&gt;
+
+    &lt;!-- Wallet Page --&gt;
+    &lt;div id=&quot;walletPage&quot; class=&quot;page&quot;&gt;...&lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
 </code></pre>
-<h2>사용자 인터랙션</h2>
-<h3>트랜잭션 생성 폼</h3>
-<pre><code class="language-javascript">function TransactionForm({ onSubmit }) {
-  const [formData, setFormData] = useState({
-    toAddress: &#x27;&#x27;,
-    amount: &#x27;&#x27;,
-    fee: &#x27;&#x27;,
-  })
+<h3>js</h3>
+<pre><code class="language-html">...
+    &lt;!-- JavaScript Modules --&gt;
 
-  const handleSubmit = (e) =&gt; {
-    e.preventDefault()
-    onSubmit(formData)
-    setFormData({ toAddress: &#x27;&#x27;, amount: &#x27;&#x27;, fee: &#x27;&#x27; })
-  }
+     &lt;!-- api handlers --&gt;
+    &lt;script src=&quot;js/api.js&quot;&gt;&lt;/script&gt;
 
-  return (
-    &lt;form onSubmit={handleSubmit}&gt;
-      &lt;input
-        type=&quot;text&quot;
-        placeholder=&quot;받는 주소&quot;
-        value={formData.toAddress}
-        onChange={(e) =&gt;
-          setFormData({ ...formData, toAddress: e.target.value })
-        }
-      /&gt;
-      &lt;input
-        type=&quot;number&quot;
-        placeholder=&quot;금액&quot;
-        value={formData.amount}
-        onChange={(e) =&gt; setFormData({ ...formData, amount: e.target.value })}
-      /&gt;
-      &lt;button type=&quot;submit&quot;&gt;트랜잭션 전송&lt;/button&gt;
-    &lt;/form&gt;
-  )
-}
+    &lt;!-- UI 렌더링 관련 함수들 --&gt;
+    &lt;script src=&quot;js/navigation.js&quot;&gt;&lt;/script&gt;
+
+    &lt;!-- Api로 받은 결과 렌더링 --&gt;
+    &lt;script src=&quot;js/ui.js&quot;&gt;&lt;/script&gt;
+
+    &lt;!-- 메인 애플리케이션 로직 --&gt;
+    &lt;script src=&quot;js/app.js&quot;&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
 </code></pre>
-<h2>반응형 디자인</h2>
-<p>모든 디바이스에서 잘 작동하는 반응형 UI:</p>
-<pre><code class="language-css">.dashboard {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-  padding: 1rem;
-}
-
-@media (min-width: 768px) {
-  .dashboard {
-    grid-template-columns: 1fr 2fr;
-  }
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-}
+<h2>확인</h2>
+<pre><code class="language-bash">npm start
 </code></pre>
-<h2>성능 최적화</h2>
-<p>대용량 데이터를 효율적으로 처리하기 위한 최적화:</p>
-<ul>
-<li><strong>가상화</strong>: 긴 리스트를 위한 react-window 사용</li>
-<li><strong>메모이제이션</strong>: React.memo와 useMemo 활용</li>
-<li><strong>코드 스플리팅</strong>: 라우트별 코드 분할</li>
-<li><strong>지연 로딩</strong>: 컴포넌트 지연 로딩</li>
-</ul></article><div class="mt-12 flex items-center justify-between border-t pt-8"><a class="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50" href="/simple-coin/mempool/"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left size-4"><path d="m15 18-6-6 6-6"></path></svg>이전 아티클</a><div class="text-sm text-gray-500">7<!-- --> / <!-- -->7</div><div class="w-32"></div></div></div><!--$!--><template data-dgst="BAILOUT_TO_CLIENT_SIDE_RENDERING"></template><!--/$--></main></div></div></div><script src="/_next/static/chunks/webpack-2d2dc68beef0c482.js" async=""></script><script>(self.__next_f=self.__next_f||[]).push([0])</script><script>self.__next_f.push([1,"2:\"$Sreact.fragment\"\n3:I[4752,[\"282\",\"static/chunks/dd507964-94e7a1153960be03.js\",\"533\",\"static/chunks/b706f4b1-2831010e2dd2a749.js\",\"692\",\"static/chunks/73dfd616-512978e649b76761.js\",\"963\",\"static/chunks/963-4dffbac8d6a25e78.js\",\"679\",\"static/chunks/679-d1a6a81af7b7551a.js\",\"177\",\"static/chunks/app/layout-725688826163538f.js\"],\"SidebarProvider\"]\n4:I[9474,[\"282\",\"static/chunks/dd507964-94e7a1153960be03.js\",\"533\",\"static/chunks/b706f4b1-2831010e2dd2a749.js\",\"692\",\"static/chunks/73dfd616-512978e649b76761.js\",\"963\",\"static/chunks/963-4dffbac8d6a25e78.js\",\"679\",\"static/chunks/679-d1a6a81af7b7551a.js\",\"177\",\"static/chunks/app/layout-725688826163538f.js\"],\"default\"]\n5:I[622,[\"282\",\"static/chunks/dd507964-94e7a1153960be03.js\",\"533\",\"static/chunks/b706f4b1-2831010e2dd2a749.js\",\"692\",\"static/chunks/73dfd616-512978e649b76761.js\",\"963\",\"static/chunks/963-4dffbac8d6a25e78.js\",\"679\",\"static/chunks/679-d1a6a81af7b7551a.js\",\"177\",\"static/chunks/app/layout-725688826163538f.js\"],\"default\"]\n6:I[4752,[\"282\",\"static/chunks/dd507964-94e7a1153960be03.js\",\"533\",\"static/chunks/b706f4b1-2831010e2dd2a749.js\",\"692\",\"static/chunks/73dfd616-512978e649b76761.js\",\"963\",\"static/chunks/963-4dffbac8d6a25e78.js\",\"679\",\"static/chunks/679-d1a6a81af7b7551a.js\",\"177\",\"static/chunks/app/layout-725688826163538f.js\"],\"Main\"]\n7:I[7059,[],\"\"]\n8:I[3333,[\"39\",\"static/chunks/app/error-b5faafca2308edb7.js\"],\"default\"]\n9:I[646,[],\"\"]\nb:I[3713,[],\"OutletBoundary\"]\nd:I[3713,[],\"MetadataBoundary\"]\nf:I[3713,[],\"ViewportBoundary\"]\n11:I[9359,[],\"\"]\n1:HL[\"/_next/static/css/2e677674121e02c0.css\",\"style\"]\n"])</script><script>self.__next_f.push([1,"0:{\"P\":null,\"b\":\"gfNoNQW0gEMWLFXPuxaxo\",\"p\":\"\",\"c\":[\"\",\"simple-coin\",\"spa\",\"\"],\"i\":false,\"f\":[[[\"\",{\"children\":[\"simple-coin\",{\"children\":[[\"id\",\"spa\",\"d\"],{\"children\":[\"__PAGE__\",{}]}]}]},\"$undefined\",\"$undefined\",true],[\"\",[\"$\",\"$2\",\"c\",{\"children\":[[[\"$\",\"link\",\"0\",{\"rel\":\"stylesheet\",\"href\":\"/_next/static/css/2e677674121e02c0.css\",\"precedence\":\"next\",\"crossOrigin\":\"$undefined\",\"nonce\":\"$undefined\"}]],[\"$\",\"html\",null,{\"lang\":\"ko\",\"className\":\"__className_fde3a9 size-full\",\"children\":[\"$\",\"body\",null,{\"className\":\"relative size-full\",\"children\":[\"$\",\"$L3\",null,{\"children\":[[\"$\",\"header\",null,{\"className\":\"fixed top-0 z-50 flex h-12 w-full items-center border-gray-200 bg-white/95 pl-10 backdrop-blur-sm\",\"children\":[\"$\",\"$L4\",null,{\"children\":[\"$\",\"span\",null,{\"children\":\"JongMin Chae\"}]}]}],[\"$\",\"$L5\",null,{}],[\"$\",\"$L6\",null,{\"className\":\"overflow-x-hidden pt-12\",\"children\":[\"$\",\"$L7\",null,{\"parallelRouterKey\":\"children\",\"segmentPath\":[\"children\"],\"error\":\"$8\",\"errorStyles\":[],\"errorScripts\":[],\"template\":[\"$\",\"$L9\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":[[\"$\",\"title\",null,{\"children\":\"404: This page could not be found.\"}],[\"$\",\"div\",null,{\"style\":{\"fontFamily\":\"system-ui,\\\"Segoe UI\\\",Roboto,Helvetica,Arial,sans-serif,\\\"Apple Color Emoji\\\",\\\"Segoe UI Emoji\\\"\",\"height\":\"100vh\",\"textAlign\":\"center\",\"display\":\"flex\",\"flexDirection\":\"column\",\"alignItems\":\"center\",\"justifyContent\":\"center\"},\"children\":[\"$\",\"div\",null,{\"children\":[[\"$\",\"style\",null,{\"dangerouslySetInnerHTML\":{\"__html\":\"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}\"}}],[\"$\",\"h1\",null,{\"className\":\"next-error-h1\",\"style\":{\"display\":\"inline-block\",\"margin\":\"0 20px 0 0\",\"padding\":\"0 23px 0 0\",\"fontSize\":24,\"fontWeight\":500,\"verticalAlign\":\"top\",\"lineHeight\":\"49px\"},\"children\":\"404\"}],[\"$\",\"div\",null,{\"style\":{\"display\":\"inline-block\"},\"children\":[\"$\",\"h2\",null,{\"style\":{\"fontSize\":14,\"fontWeight\":400,\"lineHeight\":\"49px\",\"margin\":0},\"children\":\"This page could not be found.\"}]}]]}]}]],\"notFoundStyles\":[]}]}]]}]}]}]]}],{\"children\":[\"simple-coin\",[\"$\",\"$2\",\"c\",{\"children\":[null,[\"$\",\"$L7\",null,{\"parallelRouterKey\":\"children\",\"segmentPath\":[\"children\",\"simple-coin\",\"children\"],\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L9\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":\"$undefined\",\"notFoundStyles\":\"$undefined\"}]]}],{\"children\":[[\"id\",\"spa\",\"d\"],[\"$\",\"$2\",\"c\",{\"children\":[null,[\"$\",\"$L7\",null,{\"parallelRouterKey\":\"children\",\"segmentPath\":[\"children\",\"simple-coin\",\"children\",\"$0:f:0:1:2:children:2:children:0\",\"children\"],\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L9\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":\"$undefined\",\"notFoundStyles\":\"$undefined\"}]]}],{\"children\":[\"__PAGE__\",[\"$\",\"$2\",\"c\",{\"children\":[\"$La\",null,[\"$\",\"$Lb\",null,{\"children\":\"$Lc\"}]]}],{},null]},null]},null]},null],[\"$\",\"$2\",\"h\",{\"children\":[null,[\"$\",\"$2\",\"Zy-p_oxrgg4HjvG5oJ5w1\",{\"children\":[[\"$\",\"$Ld\",null,{\"children\":\"$Le\"}],[\"$\",\"$Lf\",null,{\"children\":\"$L10\"}],null]}]]}]]],\"m\":\"$undefined\",\"G\":[\"$11\",\"$undefined\"],\"s\":false,\"S\":true}\n"])</script><script>self.__next_f.push([1,"12:I[4963,[\"963\",\"static/chunks/963-4dffbac8d6a25e78.js\",\"713\",\"static/chunks/app/simple-coin/%5Bid%5D/page-180348f7e7a038cd.js\"],\"\"]\n13:I[4931,[\"963\",\"static/chunks/963-4dffbac8d6a25e78.js\",\"713\",\"static/chunks/app/simple-coin/%5Bid%5D/page-180348f7e7a038cd.js\"],\"default\"]\n"])</script><script>self.__next_f.push([1,"a:[[\"$\",\"div\",null,{\"className\":\"mx-auto max-w-6xl p-8\",\"children\":[[\"$\",\"article\",null,{\"className\":\"prose !max-w-full\",\"children\":[[\"$\",\"h1\",null,{\"children\":\"간단한 SPA 웹페이지 구현\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"블록체인 네트워크의 상태를 실시간으로 확인할 수 있는 웹 인터페이스입니다.\"}],\"\\n\",[\"$\",\"h2\",null,{\"children\":\"SPA 아키텍처\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"Single Page Application의 기본 구조:\"}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"className\":\"language-javascript\",\"children\":\"function BlockchainDashboard() {\\r\\n  const [blocks, setBlocks] = useState([])\\r\\n  const [transactions, setTransactions] = useState([])\\r\\n  const [networkStats, setNetworkStats] = useState({})\\r\\n\\r\\n  useEffect(() =\u003e {\\r\\n    fetchBlockchainData()\\r\\n    const interval = setInterval(fetchBlockchainData, 10000) // 10초마다 갱신\\r\\n    return () =\u003e clearInterval(interval)\\r\\n  }, [])\\r\\n\\r\\n  return (\\r\\n    \u003cdiv className=\\\"dashboard\\\"\u003e\\r\\n      \u003cHeader /\u003e\\r\\n      \u003cNetworkStats stats={networkStats} /\u003e\\r\\n      \u003cBlockList blocks={blocks} /\u003e\\r\\n      \u003cTransactionList transactions={transactions} /\u003e\\r\\n    \u003c/div\u003e\\r\\n  )\\r\\n}\\n\"}]}],\"\\n\",[\"$\",\"h2\",null,{\"children\":\"실시간 데이터 관리\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"WebSocket을 활용한 실시간 데이터 업데이트:\"}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"className\":\"language-javascript\",\"children\":\"useEffect(() =\u003e {\\r\\n  const ws = new WebSocket('ws://localhost:8080')\\r\\n\\r\\n  ws.onmessage = (event) =\u003e {\\r\\n    const data = JSON.parse(event.data)\\r\\n    if (data.type === 'new_block') {\\r\\n      setBlocks((prev) =\u003e [data.block, ...prev])\\r\\n    } else if (data.type === 'new_transaction') {\\r\\n      setTransactions((prev) =\u003e [data.transaction, ...prev])\\r\\n    }\\r\\n  }\\r\\n\\r\\n  return () =\u003e ws.close()\\r\\n}, [])\\n\"}]}],\"\\n\",[\"$\",\"h2\",null,{\"children\":\"컴포넌트 구조\"}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"네트워크 통계 컴포넌트\"}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"className\":\"language-javascript\",\"children\":\"function NetworkStats({ stats }) {\\r\\n  return (\\r\\n    \u003cdiv className=\\\"stats-grid\\\"\u003e\\r\\n      \u003cStatCard title=\\\"블록 높이\\\" value={stats.blockHeight} /\u003e\\r\\n      \u003cStatCard title=\\\"총 트랜잭션\\\" value={stats.totalTransactions} /\u003e\\r\\n      \u003cStatCard title=\\\"네트워크 해시레이트\\\" value={stats.hashRate} /\u003e\\r\\n      \u003cStatCard title=\\\"연결된 노드\\\" value={stats.connectedNodes} /\u003e\\r\\n    \u003c/div\u003e\\r\\n  )\\r\\n}\\n\"}]}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"블록 리스트 컴포넌트\"}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"className\":\"language-javascript\",\"children\":\"function BlockList({ blocks }) {\\r\\n  return (\\r\\n    \u003cdiv className=\\\"block-list\\\"\u003e\\r\\n      \u003ch3\u003e최근 블록들\u003c/h3\u003e\\r\\n      {blocks.map((block) =\u003e (\\r\\n        \u003cBlockCard key={block.hash} block={block} /\u003e\\r\\n      ))}\\r\\n    \u003c/div\u003e\\r\\n  )\\r\\n}\\n\"}]}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"트랜잭션 리스트 컴포넌트\"}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"className\":\"language-javascript\",\"children\":\"function TransactionList({ transactions }) {\\r\\n  return (\\r\\n    \u003cdiv className=\\\"transaction-list\\\"\u003e\\r\\n      \u003ch3\u003e최근 트랜잭션들\u003c/h3\u003e\\r\\n      {transactions.map((tx) =\u003e (\\r\\n        \u003cTransactionCard key={tx.id} transaction={tx} /\u003e\\r\\n      ))}\\r\\n    \u003c/div\u003e\\r\\n  )\\r\\n}\\n\"}]}],\"\\n\",[\"$\",\"h2\",null,{\"children\":\"상태 관리\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"React의 useReducer를 활용한 복잡한 상태 관리:\"}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"className\":\"language-javascript\",\"children\":\"const initialState = {\\r\\n  blocks: [],\\r\\n  transactions: [],\\r\\n  loading: false,\\r\\n  error: null,\\r\\n}\\r\\n\\r\\nfunction blockchainReducer(state, action) {\\r\\n  switch (action.type) {\\r\\n    case 'FETCH_START':\\r\\n      return { ...state, loading: true }\\r\\n    case 'FETCH_SUCCESS':\\r\\n      return {\\r\\n        ...state,\\r\\n        loading: false,\\r\\n        blocks: action.payload.blocks,\\r\\n        transactions: action.payload.transactions,\\r\\n      }\\r\\n    case 'FETCH_ERROR':\\r\\n      return { ...state, loading: false, error: action.payload }\\r\\n    default:\\r\\n      return state\\r\\n  }\\r\\n}\\n\"}]}],\"\\n\",[\"$\",\"h2\",null,{\"children\":\"사용자 인터랙션\"}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"트랜잭션 생성 폼\"}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"className\":\"language-javascript\",\"children\":\"function TransactionForm({ onSubmit }) {\\r\\n  const [formData, setFormData] = useState({\\r\\n    toAddress: '',\\r\\n    amount: '',\\r\\n    fee: '',\\r\\n  })\\r\\n\\r\\n  const handleSubmit = (e) =\u003e {\\r\\n    e.preventDefault()\\r\\n    onSubmit(formData)\\r\\n    setFormData({ toAddress: '', amount: '', fee: '' })\\r\\n  }\\r\\n\\r\\n  return (\\r\\n    \u003cform onSubmit={handleSubmit}\u003e\\r\\n      \u003cinput\\r\\n        type=\\\"text\\\"\\r\\n        placeholder=\\\"받는 주소\\\"\\r\\n        value={formData.toAddress}\\r\\n        onChange={(e) =\u003e\\r\\n          setFormData({ ...formData, toAddress: e.target.value })\\r\\n        }\\r\\n      /\u003e\\r\\n      \u003cinput\\r\\n        type=\\\"number\\\"\\r\\n        placeholder=\\\"금액\\\"\\r\\n        value={formData.amount}\\r\\n        onChange={(e) =\u003e setFormData({ ...formData, amount: e.target.value })}\\r\\n      /\u003e\\r\\n      \u003cbutton type=\\\"submit\\\"\u003e트랜잭션 전송\u003c/button\u003e\\r\\n    \u003c/form\u003e\\r\\n  )\\r\\n}\\n\"}]}],\"\\n\",[\"$\",\"h2\",null,{\"children\":\"반응형 디자인\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"모든 디바이스에서 잘 작동하는 반응형 UI:\"}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"className\":\"language-css\",\"children\":\".dashboard {\\r\\n  display: grid;\\r\\n  grid-template-columns: 1fr;\\r\\n  gap: 1rem;\\r\\n  padding: 1rem;\\r\\n}\\r\\n\\r\\n@media (min-width: 768px) {\\r\\n  .dashboard {\\r\\n    grid-template-columns: 1fr 2fr;\\r\\n  }\\r\\n}\\r\\n\\r\\n.stats-grid {\\r\\n  display: grid;\\r\\n  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));\\r\\n  gap: 1rem;\\r\\n}\\n\"}]}],\"\\n\",[\"$\",\"h2\",null,{\"children\":\"성능 최적화\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"대용량 데이터를 효율적으로 처리하기 위한 최적화:\"}],\"\\n\",[\"$\",\"ul\",null,{\"children\":[\"\\n\",[\"$\",\"li\",null,{\"children\":[[\"$\",\"strong\",null,{\"children\":\"가상화\"}],\": 긴 리스트를 위한 react-window 사용\"]}],\"\\n\",[\"$\",\"li\",null,{\"children\":[[\"$\",\"strong\",null,{\"children\":\"메모이제이션\"}],\": React.memo와 useMemo 활용\"]}],\"\\n\",[\"$\",\"li\",null,{\"children\":[[\"$\",\"strong\",null,{\"children\":\"코드 스플리팅\"}],\": 라우트별 코드 분할\"]}],\"\\n\",[\"$\",\"li\",null,{\"children\":[[\"$\",\"strong\",null,{\"children\":\"지연 로딩\"}],\": 컴포넌트 지연 로딩\"]}],\"\\n\"]}]]}],[\"$\",\"div\",null,{\"className\":\"mt-12 flex items-center justify-between border-t pt-8\",\"children\":[[\"$\",\"$L12\",null,{\"href\":\"/simple-coin/mempool\",\"className\":\"flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50\",\"children\":[[\"$\",\"svg\",null,{\"ref\":\"$undefined\",\"xmlns\":\"http://www.w3.org/2000/svg\",\"width\":24,\"height\":24,\"viewBox\":\"0 0 24 24\",\"fill\":\"none\",\"stroke\":\"currentColor\",\"strokeWidth\":2,\"strokeLinecap\":\"round\",\"strokeLinejoin\":\"round\",\"className\":\"lucide lucide-chevron-left size-4\",\"children\":[[\"$\",\"path\",\"1wnfg3\",{\"d\":\"m15 18-6-6 6-6\"}],\"$undefined\"]}],\"이전 아티클\"]}],[\"$\",\"div\",null,{\"className\":\"text-sm text-gray-500\",\"children\":[7,\" / \",7]}],[\"$\",\"div\",null,{\"className\":\"w-32\"}]]}]]}],[\"$\",\"$L13\",null,{}]]\n"])</script><script>self.__next_f.push([1,"10:[[\"$\",\"meta\",\"0\",{\"name\":\"viewport\",\"content\":\"width=device-width, initial-scale=1\"}]]\ne:[[\"$\",\"meta\",\"0\",{\"charSet\":\"utf-8\"}],[\"$\",\"title\",\"1\",{\"children\":\"블록체인 \u0026 암호화폐 원리와 simple coin 구현 가이드 | JongMin Chae\"}],[\"$\",\"meta\",\"2\",{\"name\":\"description\",\"content\":\"JongMin Chae 개인 블록\"}],[\"$\",\"link\",\"3\",{\"rel\":\"icon\",\"href\":\"/images/spyglass.png\"}]]\n"])</script><script>self.__next_f.push([1,"c:null\n"])</script></body></html>
+<p>http://localhost:3001/ 에 들어가면 확인할 수 있습니다.</p>
+<p>이제는 UI로 블록체인,잔고,주소를 확인하고 블록을 채굴하거나 거래를 발생 시킬 수 있습니다.</p>
+<h2>다음 챕터</h2>
+<p>현재는 연결된 노드가 없습니다. 블록체인 네트워크가 잘 동작하는지, 서로 거래를 주고 받을 수 있는지 확인할 수가 없습니다. 혼자서도 거래를 주고받아 볼 수 있도록 도커를 사용해서 node를 여러 개를 띄워 보겠습니다.</p></article><div class="mt-12 flex items-center justify-between border-t pt-8"><a class="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50" href="/simple-coin/mempool/"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left size-4"><path d="m15 18-6-6 6-6"></path></svg>이전 아티클</a><div class="text-sm text-gray-500">7<!-- --> / <!-- -->8</div><a class="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50" href="/simple-coin/docker/">다음 아티클<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right size-4"><path d="m9 18 6-6-6-6"></path></svg></a></div></div><!--$!--><template data-dgst="BAILOUT_TO_CLIENT_SIDE_RENDERING"></template><!--/$--></main></div></div></div><script src="/_next/static/chunks/webpack-2d2dc68beef0c482.js" async=""></script><script>(self.__next_f=self.__next_f||[]).push([0])</script><script>self.__next_f.push([1,"2:\"$Sreact.fragment\"\n3:I[4752,[\"282\",\"static/chunks/dd507964-94e7a1153960be03.js\",\"533\",\"static/chunks/b706f4b1-2831010e2dd2a749.js\",\"692\",\"static/chunks/73dfd616-512978e649b76761.js\",\"963\",\"static/chunks/963-4dffbac8d6a25e78.js\",\"679\",\"static/chunks/679-d1a6a81af7b7551a.js\",\"177\",\"static/chunks/app/layout-eb3ccd7f5c20da6c.js\"],\"SidebarProvider\"]\n4:I[9474,[\"282\",\"static/chunks/dd507964-94e7a1153960be03.js\",\"533\",\"static/chunks/b706f4b1-2831010e2dd2a749.js\",\"692\",\"static/chunks/73dfd616-512978e649b76761.js\",\"963\",\"static/chunks/963-4dffbac8d6a25e78.js\",\"679\",\"static/chunks/679-d1a6a81af7b7551a.js\",\"177\",\"static/chunks/app/layout-eb3ccd7f5c20da6c.js\"],\"default\"]\n5:I[622,[\"282\",\"static/chunks/dd507964-94e7a1153960be03.js\",\"533\",\"static/chunks/b706f4b1-2831010e2dd2a749.js\",\"692\",\"static/chunks/73dfd616-512978e649b76761.js\",\"963\",\"static/chunks/963-4dffbac8d6a25e78.js\",\"679\",\"static/chunks/679-d1a6a81af7b7551a.js\",\"177\",\"static/chunks/app/layout-eb3ccd7f5c20da6c.js\"],\"default\"]\n6:I[4752,[\"282\",\"static/chunks/dd507964-94e7a1153960be03.js\",\"533\",\"static/chunks/b706f4b1-2831010e2dd2a749.js\",\"692\",\"static/chunks/73dfd616-512978e649b76761.js\",\"963\",\"static/chunks/963-4dffbac8d6a25e78.js\",\"679\",\"static/chunks/679-d1a6a81af7b7551a.js\",\"177\",\"static/chunks/app/layout-eb3ccd7f5c20da6c.js\"],\"Main\"]\n7:I[7059,[],\"\"]\n8:I[3333,[\"39\",\"static/chunks/app/error-b5faafca2308edb7.js\"],\"default\"]\n9:I[646,[],\"\"]\nb:I[3713,[],\"OutletBoundary\"]\nd:I[3713,[],\"MetadataBoundary\"]\nf:I[3713,[],\"ViewportBoundary\"]\n11:I[9359,[],\"\"]\n1:HL[\"/_next/static/css/aa5c0cfdd8dfd8bd.css\",\"style\"]\n"])</script><script>self.__next_f.push([1,"0:{\"P\":null,\"b\":\"Yf5GZIQzHMcvX3HNUihRz\",\"p\":\"\",\"c\":[\"\",\"simple-coin\",\"spa\",\"\"],\"i\":false,\"f\":[[[\"\",{\"children\":[\"simple-coin\",{\"children\":[[\"id\",\"spa\",\"d\"],{\"children\":[\"__PAGE__\",{}]}]}]},\"$undefined\",\"$undefined\",true],[\"\",[\"$\",\"$2\",\"c\",{\"children\":[[[\"$\",\"link\",\"0\",{\"rel\":\"stylesheet\",\"href\":\"/_next/static/css/aa5c0cfdd8dfd8bd.css\",\"precedence\":\"next\",\"crossOrigin\":\"$undefined\",\"nonce\":\"$undefined\"}]],[\"$\",\"html\",null,{\"lang\":\"ko\",\"className\":\"__className_fde3a9 size-full\",\"children\":[\"$\",\"body\",null,{\"className\":\"relative size-full\",\"children\":[\"$\",\"$L3\",null,{\"children\":[[\"$\",\"header\",null,{\"className\":\"fixed top-0 z-50 flex h-12 w-full items-center border-gray-200 bg-white/95 pl-10 backdrop-blur-sm\",\"children\":[\"$\",\"$L4\",null,{\"children\":[\"$\",\"span\",null,{\"children\":\"JongMin Chae\"}]}]}],[\"$\",\"$L5\",null,{}],[\"$\",\"$L6\",null,{\"className\":\"overflow-x-hidden pt-12\",\"children\":[\"$\",\"$L7\",null,{\"parallelRouterKey\":\"children\",\"segmentPath\":[\"children\"],\"error\":\"$8\",\"errorStyles\":[],\"errorScripts\":[],\"template\":[\"$\",\"$L9\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":[[\"$\",\"title\",null,{\"children\":\"404: This page could not be found.\"}],[\"$\",\"div\",null,{\"style\":{\"fontFamily\":\"system-ui,\\\"Segoe UI\\\",Roboto,Helvetica,Arial,sans-serif,\\\"Apple Color Emoji\\\",\\\"Segoe UI Emoji\\\"\",\"height\":\"100vh\",\"textAlign\":\"center\",\"display\":\"flex\",\"flexDirection\":\"column\",\"alignItems\":\"center\",\"justifyContent\":\"center\"},\"children\":[\"$\",\"div\",null,{\"children\":[[\"$\",\"style\",null,{\"dangerouslySetInnerHTML\":{\"__html\":\"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}\"}}],[\"$\",\"h1\",null,{\"className\":\"next-error-h1\",\"style\":{\"display\":\"inline-block\",\"margin\":\"0 20px 0 0\",\"padding\":\"0 23px 0 0\",\"fontSize\":24,\"fontWeight\":500,\"verticalAlign\":\"top\",\"lineHeight\":\"49px\"},\"children\":\"404\"}],[\"$\",\"div\",null,{\"style\":{\"display\":\"inline-block\"},\"children\":[\"$\",\"h2\",null,{\"style\":{\"fontSize\":14,\"fontWeight\":400,\"lineHeight\":\"49px\",\"margin\":0},\"children\":\"This page could not be found.\"}]}]]}]}]],\"notFoundStyles\":[]}]}]]}]}]}]]}],{\"children\":[\"simple-coin\",[\"$\",\"$2\",\"c\",{\"children\":[null,[\"$\",\"$L7\",null,{\"parallelRouterKey\":\"children\",\"segmentPath\":[\"children\",\"simple-coin\",\"children\"],\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L9\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":\"$undefined\",\"notFoundStyles\":\"$undefined\"}]]}],{\"children\":[[\"id\",\"spa\",\"d\"],[\"$\",\"$2\",\"c\",{\"children\":[null,[\"$\",\"$L7\",null,{\"parallelRouterKey\":\"children\",\"segmentPath\":[\"children\",\"simple-coin\",\"children\",\"$0:f:0:1:2:children:2:children:0\",\"children\"],\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L9\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":\"$undefined\",\"notFoundStyles\":\"$undefined\"}]]}],{\"children\":[\"__PAGE__\",[\"$\",\"$2\",\"c\",{\"children\":[\"$La\",null,[\"$\",\"$Lb\",null,{\"children\":\"$Lc\"}]]}],{},null]},null]},null]},null],[\"$\",\"$2\",\"h\",{\"children\":[null,[\"$\",\"$2\",\"1dQxPbmtTbiMlCFrdkcAZ\",{\"children\":[[\"$\",\"$Ld\",null,{\"children\":\"$Le\"}],[\"$\",\"$Lf\",null,{\"children\":\"$L10\"}],null]}]]}]]],\"m\":\"$undefined\",\"G\":[\"$11\",\"$undefined\"],\"s\":false,\"S\":true}\n"])</script><script>self.__next_f.push([1,"12:I[4963,[\"963\",\"static/chunks/963-4dffbac8d6a25e78.js\",\"713\",\"static/chunks/app/simple-coin/%5Bid%5D/page-180348f7e7a038cd.js\"],\"\"]\n13:I[4931,[\"963\",\"static/chunks/963-4dffbac8d6a25e78.js\",\"713\",\"static/chunks/app/simple-coin/%5Bid%5D/page-180348f7e7a038cd.js\"],\"default\"]\n"])</script><script>self.__next_f.push([1,"a:[[\"$\",\"div\",null,{\"className\":\"mx-auto max-w-6xl p-8\",\"children\":[[\"$\",\"article\",null,{\"className\":\"prose !max-w-full\",\"children\":[[\"$\",\"h1\",null,{\"children\":\"Simple SPA\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"현재 CLI를 통하여 거래를 만들고 블록을 채굴할 수 있습니다. 그러나 CLI에 명령어를 치는 것보다 UI를 통하여 사용하면 더 편하겠죠? SPA(Single Page Application)를 도입해 사용성을 개선해 봅시다.\"}],\"\\n\",[\"$\",\"h2\",null,{\"children\":\"SPA(Single Page Application)이란?\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"SPA(싱글 페이지 애플리케이션)는 전통적인 다중 페이지 방식(Multi-Page Application, MPA)과 달리\\r\\n초기 로드 시 하나의 HTML 페이지와 자바스크립트 번들을 받아온 뒤,\\r\\n이후의 화면 전환은 서버로부터 전체 페이지를 다시 로드하지 않고 클라이언트(브라우저)에서 자바스크립트로 라우팅과 뷰 업데이트를 처리하는 웹 애플리케이션입니다.\"}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"SPA의 동작 원리 (간단히)\"}],\"\\n\",[\"$\",\"ol\",null,{\"children\":[\"\\n\",[\"$\",\"li\",null,{\"children\":\"사용자가 앱에 접속하면 초기 HTML/CSS/JS 번들을 로드합니다.\"}],\"\\n\",[\"$\",\"li\",null,{\"children\":\"URL을 감지하여 적절한 컴포넌트를 렌더링합니다.\"}],\"\\n\"]}],\"\\n\",[\"$\",\"h2\",null,{\"children\":\"요구사항\"}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"home(\\\"/\\\")\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"explorer로 이동하는 버튼\\r\\nwallet으로 이동하는 버튼\\r\\n간단한 설명\"}],\"\\n\",[\"$\",\"img\",null,{\"width\":\"\",\"height\":\"\",\"alt\":\"image\",\"src\":\"https://github.com/user-attachments/assets/5f6acc1b-d28d-4f8c-a1b4-c4a09c27bc09\"}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"explorer(\\\"/explorer\\\")\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":[\"블록체인 확인\",[\"$\",\"br\",null,{}],\"\\n\",\"블록 검색 bt index or hash\"]}],\"\\n\",[\"$\",\"img\",null,{\"width\":\"\",\"height\":\"\",\"alt\":\"image\",\"src\":\"https://github.com/user-attachments/assets/b86f67f2-cf20-4cc9-a72c-4875542a84a6\"}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"wallet(\\\"/wallet\\\")\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":[\"잔고 확인\",[\"$\",\"br\",null,{}],\"\\n\",\"주소 확인\",[\"$\",\"br\",null,{}],\"\\n\",\"코인 보내기\"]}],\"\\n\",[\"$\",\"img\",null,{\"width\":\"\",\"height\":\"\",\"alt\":\"image\",\"src\":\"https://github.com/user-attachments/assets/5a299a08-b5b8-41b5-af90-b62fee206bf3\"}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"mempool \u0026 peers \u0026 mining(explorer와 wallet 페이지 하단)\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":[\"mempool 확인\",[\"$\",\"br\",null,{}],\"\\n\",\"연결된 노드 확인\",[\"$\",\"br\",null,{}],\"\\n\",\"블록 채굴(mempool transaction 블록에 담기)\"]}],\"\\n\",[\"$\",\"img\",null,{\"width\":\"\",\"height\":\"\",\"alt\":\"image\",\"src\":\"https://github.com/user-attachments/assets/622fe360-a7a3-49b6-b20b-ddf78103eda3\"}],\"\\n\",[\"$\",\"h2\",null,{\"children\":\"SPA를 위한 endpoints\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"SPA(Single Page Application)을 지원하기 위해 Express 서버에서 라우팅을 처리하는 방식입니다.\"}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"정적 파일 제공\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":[[\"$\",\"code\",null,{\"children\":\"public\"}],\" 디렉토리를 정적 파일 제공 폴더로 지정합니다. 따라서 html, JS 같은 정적 자원은 별도의 라우팅 없이 자동으로 서비스됩니다.\"]}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"className\":\"language-ts\",\"children\":\"app.use(express.static(path.join(__dirname, '..', 'public')))\\n\"}]}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"모든 경로를 index.html로 처리\"}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"className\":\"language-ts\",\"children\":\"app.get('/explorer', (req, res) =\u003e {\\r\\n  res.sendFile(path.join(__dirname, '..', 'public', 'index.html'))\\r\\n})\\r\\n\\r\\napp.get('/wallet', (req, res) =\u003e {\\r\\n  res.sendFile(path.join(__dirname, '..', 'public', 'index.html'))\\r\\n})\\n\"}]}],\"\\n\",[\"$\",\"p\",null,{\"children\":[\"👉 사용자가 \",[\"$\",\"code\",null,{\"children\":\"/explorer\"}],\", \",[\"$\",\"code\",null,{\"children\":\"/wallet\"}],\" 경로로 접근했을 때, 실제 서버에 \",[\"$\",\"code\",null,{\"children\":\"/explorer.html\"}],\"와 \",[\"$\",\"code\",null,{\"children\":\"/wallet.html\"}],\"이 아닌 \",[\"$\",\"code\",null,{\"children\":\"index.html\"}],\"을 응답으로 줍니다. SPA는 index.html 안에서 해당 경로에 맞는 컴포넌트를 렌더링합니다.\"]}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"className\":\"language-ts\",\"children\":\"app.get('/wallet', (req, res) =\u003e {\\r\\n  res.sendFile(path.join(__dirname, '..', 'public', 'index.html'))\\r\\n})\\n\"}]}],\"\\n\",[\"$\",\"h2\",null,{\"children\":\"정적 파일(html, js)\"}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"tailwind css\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"디자인은 tailwind를 사용하고 CDN을 통해 가져옵니다.\"}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"className\":\"language-html\",\"children\":\"\u003c!-- index.html --\u003e\\r\\n\u003c!DOCTYPE html\u003e\\r\\n\u003chtml\u003e\\r\\n  \u003chead\u003e\\r\\n    \u003c!-- tailwind --\u003e\\r\\n    \u003cscript src=\\\"https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4\\\"\u003e\u003c/script\u003e\\r\\n    \u003ctitle\u003eSimple Coin\u003c/title\u003e\\r\\n    \u003cmeta name=\\\"viewport\\\" content=\\\"width=device-width, initial-scale=1.0\\\" /\u003e\\r\\n  \u003c/head\u003e\\r\\n  \u003cbody class=\\\"bg-white min-h-screen\\\"\u003e\\r\\n    .....\\r\\n  \u003c/body\u003e\\r\\n\u003c/html\u003e\\n\"}]}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"html\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"모든 경로의 UI를 작성 후 차후 자바스크립트로 해당 경로에 해당하는 컴포넌트를 js로 렌더링합니다.\"}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"className\":\"language-html\",\"children\":\"\u003c!DOCTYPE html\u003e\\r\\n\u003chtml\u003e\\r\\n  \u003chead\u003e\\r\\n    ...\\r\\n  \u003c/head\u003e\\r\\n  \u003cbody class=\\\"bg-white min-h-screen\\\"\u003e\\r\\n    \u003c!-- Header --\u003e\\r\\n    \u003cheader class=\\\"bg-gray-50 shadow-md border-b border-gray-300\\\"\u003e...\u003c/header\u003e\\r\\n\\r\\n    \u003c!-- Home Page --\u003e\\r\\n    \u003cdiv id=\\\"homePage\\\" class=\\\"page active\\\"\u003e...\u003c/div\u003e\\r\\n\\r\\n    \u003c!-- Explorer Page --\u003e\\r\\n    \u003cdiv id=\\\"explorerPage\\\" class=\\\"page\\\"\u003e...\u003c/div\u003e\\r\\n\\r\\n    \u003c!-- Wallet Page --\u003e\\r\\n    \u003cdiv id=\\\"walletPage\\\" class=\\\"page\\\"\u003e...\u003c/div\u003e\\r\\n  \u003c/body\u003e\\r\\n\u003c/html\u003e\\n\"}]}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"js\"}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"className\":\"language-html\",\"children\":\"...\\r\\n    \u003c!-- JavaScript Modules --\u003e\\r\\n\\r\\n     \u003c!-- api handlers --\u003e\\r\\n    \u003cscript src=\\\"js/api.js\\\"\u003e\u003c/script\u003e\\r\\n\\r\\n    \u003c!-- UI 렌더링 관련 함수들 --\u003e\\r\\n    \u003cscript src=\\\"js/navigation.js\\\"\u003e\u003c/script\u003e\\r\\n\\r\\n    \u003c!-- Api로 받은 결과 렌더링 --\u003e\\r\\n    \u003cscript src=\\\"js/ui.js\\\"\u003e\u003c/script\u003e\\r\\n\\r\\n    \u003c!-- 메인 애플리케이션 로직 --\u003e\\r\\n    \u003cscript src=\\\"js/app.js\\\"\u003e\u003c/script\u003e\\r\\n  \u003c/body\u003e\\r\\n\u003c/html\u003e\\n\"}]}],\"\\n\",[\"$\",\"h2\",null,{\"children\":\"확인\"}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"className\":\"language-bash\",\"children\":\"npm start\\n\"}]}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"http://localhost:3001/ 에 들어가면 확인할 수 있습니다.\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"이제는 UI로 블록체인,잔고,주소를 확인하고 블록을 채굴하거나 거래를 발생 시킬 수 있습니다.\"}],\"\\n\",[\"$\",\"h2\",null,{\"children\":\"다음 챕터\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"현재는 연결된 노드가 없습니다. 블록체인 네트워크가 잘 동작하는지, 서로 거래를 주고 받을 수 있는지 확인할 수가 없습니다. 혼자서도 거래를 주고받아 볼 수 있도록 도커를 사용해서 node를 여러 개를 띄워 보겠습니다.\"}]]}],[\"$\",\"div\",null,{\"className\":\"mt-12 flex items-center justify-between border-t pt-8\",\"children\":[[\"$\",\"$L12\",null,{\"href\":\"/simple-coin/mempool\",\"className\":\"flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50\",\"children\":[[\"$\",\"svg\",null,{\"ref\":\"$undefined\",\"xmlns\":\"http://www.w3.org/2000/svg\",\"width\":24,\"height\":24,\"viewBox\":\"0 0 24 24\",\"fill\":\"none\",\"stroke\":\"currentColor\",\"strokeWidth\":2,\"strokeLinecap\":\"round\",\"strokeLinejoin\":\"round\",\"className\":\"lucide lucide-chevron-left size-4\",\"children\":[[\"$\",\"path\",\"1wnfg3\",{\"d\":\"m15 18-6-6 6-6\"}],\"$undefined\"]}],\"이전 아티클\"]}],[\"$\",\"div\",null,{\"className\":\"text-sm text-gray-500\",\"children\":[7,\" / \",8]}],[\"$\",\"$L12\",null,{\"href\":\"/simple-coin/docker\",\"className\":\"flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50\",\"children\":[\"다음 아티클\",[\"$\",\"svg\",null,{\"ref\":\"$undefined\",\"xmlns\":\"http://www.w3.org/2000/svg\",\"width\":24,\"height\":24,\"viewBox\":\"0 0 24 24\",\"fill\":\"none\",\"stroke\":\"currentColor\",\"strokeWidth\":2,\"strokeLinecap\":\"round\",\"strokeLinejoin\":\"round\",\"className\":\"lucide lucide-chevron-right size-4\",\"children\":[[\"$\",\"path\",\"mthhwq\",{\"d\":\"m9 18 6-6-6-6\"}],\"$undefined\"]}]]}]]}]]}],[\"$\",\"$L13\",null,{}]]\n"])</script><script>self.__next_f.push([1,"10:[[\"$\",\"meta\",\"0\",{\"name\":\"viewport\",\"content\":\"width=device-width, initial-scale=1\"}]]\ne:[[\"$\",\"meta\",\"0\",{\"charSet\":\"utf-8\"}],[\"$\",\"title\",\"1\",{\"children\":\"블록체인 \u0026 암호화폐 원리와 simple coin 구현 가이드 | JongMin Chae\"}],[\"$\",\"meta\",\"2\",{\"name\":\"description\",\"content\":\"JongMin Chae 개인 블록\"}],[\"$\",\"link\",\"3\",{\"rel\":\"icon\",\"href\":\"/images/spyglass.png\"}]]\n"])</script><script>self.__next_f.push([1,"c:null\n"])</script></body></html>
