@@ -1,0 +1,175 @@
+<!DOCTYPE html><html lang="ko" class="__className_fde3a9 size-full"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="preload" as="image" href="https://github.com/user-attachments/assets/e9af0399-2883-4af5-98e6-a65939187d53"/><link rel="preload" as="image" href="https://github.com/user-attachments/assets/27be6839-a5ae-4856-8f45-f6fb763b3592"/><link rel="preload" as="image" href="https://github.com/user-attachments/assets/941afa2b-fc63-4c3a-912f-a897cd0ee0e9"/><link rel="preload" as="image" href="https://github.com/user-attachments/assets/10d8c392-2077-462c-b6c6-f389941e6f84"/><link rel="stylesheet" href="/_next/static/css/2e677674121e02c0.css" data-precedence="next"/><link rel="preload" as="script" fetchPriority="low" href="/_next/static/chunks/webpack-2d2dc68beef0c482.js"/><script src="/_next/static/chunks/80433fe4-e24eaad93a1cfb9d.js" async=""></script><script src="/_next/static/chunks/367-0ec4dc94cb811371.js" async=""></script><script src="/_next/static/chunks/main-app-f1b4d9826ef8e891.js" async=""></script><script src="/_next/static/chunks/dd507964-94e7a1153960be03.js" async=""></script><script src="/_next/static/chunks/b706f4b1-2831010e2dd2a749.js" async=""></script><script src="/_next/static/chunks/73dfd616-512978e649b76761.js" async=""></script><script src="/_next/static/chunks/963-4dffbac8d6a25e78.js" async=""></script><script src="/_next/static/chunks/679-d1a6a81af7b7551a.js" async=""></script><script src="/_next/static/chunks/app/layout-725688826163538f.js" async=""></script><script src="/_next/static/chunks/app/error-b5faafca2308edb7.js" async=""></script><script src="/_next/static/chunks/app/simple-coin/%5Bid%5D/page-180348f7e7a038cd.js" async=""></script><title>블록체인 &amp; 암호화폐 원리와 simple coin 구현 가이드 | JongMin Chae</title><meta name="description" content="JongMin Chae 개인 블록"/><link rel="icon" href="/images/spyglass.png"/><script src="/_next/static/chunks/polyfills-42372ed130431b0a.js" noModule=""></script></head><body class="relative size-full"><header class="fixed top-0 z-50 flex h-12 w-full items-center border-gray-200 bg-white/95 pl-10 backdrop-blur-sm"><div class="flex items-center gap-2"><a href="/"><span>JongMin Chae</span></a><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16" class="size-3" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm5-1v12h9a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1zM4 2H2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h2z"></path></svg></div></header><div dir="ltr" class="relative overflow-hidden" style="position:relative;--radix-scroll-area-corner-width:0px;--radix-scroll-area-corner-height:0px"><style>[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}</style><div data-radix-scroll-area-viewport="" class="size-full rounded-[inherit]" style="overflow-x:hidden;overflow-y:hidden"><div style="min-width:100%;display:table"><main class="size-full transition-all duration-300 ease-out pl-0 overflow-x-hidden pt-12"><div class="mx-auto max-w-6xl p-8"><article class="prose !max-w-full"><h1>Simple Blockchain</h1>
+<h2>블록체인이란?</h2>
+<p>블록체인이라고 하면 첨단 기술 같지만 그 개념은 간단합니다.
+한 줄 로 정리하자면</p>
+<pre><code>해시값으로 연결된 블록을 쌓아가는 분산형 데이터베이스.
+</code></pre>
+<p>블록체인을 이해하기 위해서는 블록, 해시값, 체인, 분산형 데이터베이스가 무엇인지 알아야 합니다.</p>
+<h3>블록</h3>
+<p>여러 거래(또는 기록)를 일정한 단위로 묶어 놓은 데이터 집합입니다.
+블록체인의 블록에는 자신의 해시값과 이전 블록의 해시값을 데이터로 가지고 있습니다.</p>
+<pre><code class="language-ts">class Block {
+  public index: number // 인덱스
+  public previousHash: string // 이전 블록의 해시 값
+  public timestamp: number // 생성 시간
+  public data: Transaction[] // 담고 싶은 데이터 (거래 내역)
+  public hash: string // 해당 블록의 해시값
+
+  constructor(
+    index: number,
+    previousHash: string,
+    timestamp: number,
+    data: Transaction[],
+    difficulty: number,
+    nonce: number,
+    hash: string,
+  ) {
+    this.index = index
+    this.previousHash = previousHash
+    this.timestamp = timestamp
+    this.data = data
+    this.hash = hash
+  }
+}
+</code></pre>
+<p>블록체인에 첫번째로 생성된 블록은 이전 블록이 없겠죠? 그런 블록은 이전 블록의 해시값을 가지고 있지 않습니다. 이런 특별한 블록을 <strong>제네시스 블록</strong>이라고 합니다. 이는 하드 코딩으로 생성해야 합니다.</p>
+<pre><code class="language-ts">const genesisBlock: Block = new Block(
+  0,
+  &#x27;&#x27;,
+  1756716811,
+  &#x27;Let there be a block&#x27;,
+  &#x27;38cdd2a4bdf21856e32e440da4ade0441e5b327f87981fe18dc63c4e1f0a2db6&#x27;,
+)
+</code></pre>
+<h3>해시</h3>
+<p>데이터를 일정한 길이의 고정된 문자열로 변환하는 암호학적 함수입니다. 해시 함수의 핵심은 4 가지입니다.</p>
+<h4>1. 일가성 함수</h4>
+<p>해시 함수도 함수입니다. 입력값이 같으면 항상 동일한 출력값을 냅니다.</p>
+<h4>2. 고정된 길이 출력</h4>
+<p>해시 함수에는 어떤 데이터든지 들어갈 수 있습니다. 그러나 입력값에 상관없이 언제나 똑같은 길이의 값을 출력합니다.
+simple coin은 비트코인과 같이 SHA256 해시 함수를 사용합니다. 작은 데이터를 넣든, 큰 데이터를 넣든 언제느 16진수(HEX)의 64글자가 결괏값으로 나옵니다.
+해시 함수는 고정된 길이를 출력하기 때문에 해싱을 입력값을 압축한 것으로 받아들여도 좋습니다. 즉 대표값으로 여길 수 있습니다. 이 때문에 해싱해서 나온 출력값을 메시지 다이제스트(Message Digest) 또는 지문(fingerprint)라고도 합니다.</p>
+<h4>3. 눈사태 효과</h4>
+<p>눈사태 효과란 입력값이 아주 조금만 바꿔도 완전히 다른 결괏값이 나오는 것을 의미합니다.
+입력값이 비슷해도 출력값에서는 유사성을 전혀 찾아볼 수 없습니다.</p>
+<h4>4. 단방향성</h4>
+<p>해시 함수의 가장 중요한 특징입니다. 출력값을 보고 입력값을 알아낼 수 없습니다. 이 특징 때문에 해시 함수는 보안 분야에서 많이 사용됩니다.</p>
+<h3>체인</h3>
+<p>블록의 모든 데이터를 해싱한 값을 블록의 해시값으로 사용하고 대표값으로 활용합니다.
+각 블록은 이전 블록의 해시값을 포함하고 있기 때문에, 마치 <strong>체인</strong>처럼 끊어지지 않고 연결됩니다.</p>
+<p><img src="https://github.com/user-attachments/assets/e9af0399-2883-4af5-98e6-a65939187d53" alt="블록"/></p>
+<pre><code class="language-ts">// index, previousHash, timestamp, data를 해싱
+calculateHash(
+    index: number,
+    previousHash: string,
+    timestamp: number,
+    data: string
+): string =&gt; {
+    return CryptoJS.SHA256(index + previousHash + timestamp + data).toString();
+}
+
+
+const generateBlock = (blockData: string) =&gt; {
+  const previousBlock: Block = getLatestBlock(); // 마지막 블록
+  const nextIndex: number = previousBlock.index + 1;
+  const nextTimestamp: number = new Date().getTime() / 1000;
+  const nextHash: string = calculateHash(
+    nextIndex,
+    previousBlock.hash,
+    nextTimestamp,
+    blockData
+  );
+  const newBlock: Block = new Block(
+    nextIndex,
+    previousBlock.hash,
+    nextTimestamp,
+    blockData,
+    nextHash
+  );
+  return newBlock;
+};
+
+</code></pre>
+<p>블록의 해시값에는 &quot;이전 블록의 해시값&quot;이 들어가기 때문에 두 블록은 완전히 연결됩니다. 해당 해시값이 나오기 위해서는 이전 블록의 데이터를 품고 있을 수 밖에 없습니다.
+여기서 선후관계가 만들어지고, 각 블록의 연결 고리가 만들어집니다.</p>
+<p>이러한 구조를 가지고 있기 때문에 특정 블록의 데이터를 위조하면 특정 블록 이후에 있는 모든 블록의 값을 변경해야 학디 때문에 위변조가 매우 어려워집니다.</p>
+<p><img src="https://github.com/user-attachments/assets/27be6839-a5ae-4856-8f45-f6fb763b3592" alt="체인"/></p>
+<p>비트코인을 만든 사토시 나카모토가 이 개념을 처음 백서에서 소개할 때는 블록체인이라는 말을 쓰지 않았지만 블록들이 체인처럼 연결되어 있기 때문에 이 말이 대중화가 되었다고 합니다.</p>
+<h3>분산형 데이터베이스</h3>
+<p>물리적으로는 여러 위치에 분산되어 있지만, 논리적으로는 하나의 통합된 데이터베이스 시스템처럼 동작하는 데이터베이스를 말합니다. 여러 대의 컴퓨터(노드 또는 인스턴스)가 네트워크를 통해 연결되어 있고, 각각의 컴퓨터가 모두 데이터를 저장하고 처리합니다. 서버를 두고 한 곳에서만 처리하지 않기 때문에 한 곳에서 문제가 생겨도 시스템 전체가 멈추지 않고 계속 돌아갑니다.
+즉, 해시로 연결되어 있는 블록 데이터들을 한 곳에 저장한 것이 아니라 여러 컴퓨터가 모두 가지고 있고 네트워크를 통해 서로 계속해서 통신하며 업데이트를 할 때, 블록체인이 완성됩니다.</p>
+<p><img src="https://github.com/user-attachments/assets/941afa2b-fc63-4c3a-912f-a897cd0ee0e9" alt="블록체인"/></p>
+<h2>구현</h2>
+<h3>블록체인 저장 및 무결성 검증</h3>
+<p>simple coin은 인메모리 자바스크립트 배열을 사용하여 블록체인을 저장합니다. 노드가 종료되면 데이터가 영구적으로 저장되지 않습니다.</p>
+<pre><code class="language-javascript">const blockchain: Block[] = [genesisBlock];
+</code></pre>
+<h3>무결성 검증</h3>
+<p>언제든지 블록 또는 블록 체인의 <strong>무결성을 검증</strong>할 수 있어야 합니다.
+특히 다른 노드로부터 새로운 블록을 수신했을 때 이를 수락할지 여부를 결정해야 하기 때문에 매우 중요합니다.</p>
+<h3>블록 검증</h3>
+<p>블록이 유효하려면 다음 조건이 충족되어야 합니다.</p>
+<ul>
+<li>블록의 <strong>인덱스</strong>는 이전 블록의 인덱스보다 1이 커야 합니다.</li>
+<li>블록의 <code>previousHash</code>는 이전 블록의 <code>hash</code>와 일치해야 합니다.</li>
+<li>블록 자체의 <code>hash</code>가 유효해야 합니다.</li>
+</ul>
+<pre><code class="language-ts">const isValidBlock = (newBlock: Block, previousBlock: Block): boolean =&gt; {
+  if (!isValidBlockStructure(newBlock)) {
+    console.log(&#x27;invalid structure&#x27;)
+    return false
+  }
+
+  if (previousBlock.index + 1 !== newBlock.index) {
+    console.log(&#x27;invalid index&#x27;)
+    return false
+  }
+
+  if (previousBlock.hash !== newBlock.previousHash) {
+    console.log(&#x27;invalid previousHash&#x27;)
+    return false
+  }
+
+  if (calculateHashForBlock(newBlock) !== newBlock.hash) {
+    console.log(&#x27;invalid hash&#x27;)
+    return false
+  }
+  return true
+}
+</code></pre>
+<h3>블록체인 검증</h3>
+<p>제네시스 블록부터 시작하여 순차적으로 모든 블록이 유효한지 검사합니다.</p>
+<pre><code class="language-ts">const isValidChain = (blockchainToValidate: Block[]): boolean =&gt; {
+  if (!isValidGenesis(blockchainToValidate[0])) {
+    return false
+  }
+
+  for (let i = 1; i &lt; blockchainToValidate.length; i++) {
+    if (
+      !isValidNewBlock(blockchainToValidate[i], blockchainToValidate[i - 1])
+    ) {
+      return false
+    }
+  }
+  return true
+}
+</code></pre>
+<h3>충돌 상황(Fork)</h3>
+<p>충돌이 발생하는 경우(예: 두 노드가 동시에 블록 번호 72를 생성하는 경우) 블록 수가 가장 긴 체인을 선택합니다.</p>
+<p><img src="https://github.com/user-attachments/assets/10d8c392-2077-462c-b6c6-f389941e6f84" alt="fork"/></p>
+<pre><code class="language-ts">const replaceChain = (newBlockchain: Block[]) =&gt; {
+  if (
+    isValidChain(newBlockchain) &amp;&amp;
+    newBlockchain.length &gt; getBlockchain().length
+  ) {
+    console.log(
+      &#x27;Received blockchain is valid. Replacing current blockchain with received blockchain&#x27;,
+    )
+    blockchain = newBlockchain
+  } else {
+    console.log(&#x27;Received blockchain invalid&#x27;)
+  }
+}
+</code></pre>
+<h2>다음 챕터</h2>
+<p>다음 챕터에서는 노드를 연결해서 블록체인 네트워크를 만들어 분산형 데이터베이스를 구현해보겠습니다.</p></article><div class="mt-12 flex items-center justify-between border-t pt-8"><div class="w-32"></div><div class="text-sm text-gray-500">1<!-- --> / <!-- -->7</div><a class="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50" href="/simple-coin/network/">다음 아티클<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right size-4"><path d="m9 18 6-6-6-6"></path></svg></a></div></div><!--$!--><template data-dgst="BAILOUT_TO_CLIENT_SIDE_RENDERING"></template><!--/$--></main></div></div></div><script src="/_next/static/chunks/webpack-2d2dc68beef0c482.js" async=""></script><script>(self.__next_f=self.__next_f||[]).push([0])</script><script>self.__next_f.push([1,"2:\"$Sreact.fragment\"\n3:I[4752,[\"282\",\"static/chunks/dd507964-94e7a1153960be03.js\",\"533\",\"static/chunks/b706f4b1-2831010e2dd2a749.js\",\"692\",\"static/chunks/73dfd616-512978e649b76761.js\",\"963\",\"static/chunks/963-4dffbac8d6a25e78.js\",\"679\",\"static/chunks/679-d1a6a81af7b7551a.js\",\"177\",\"static/chunks/app/layout-725688826163538f.js\"],\"SidebarProvider\"]\n4:I[9474,[\"282\",\"static/chunks/dd507964-94e7a1153960be03.js\",\"533\",\"static/chunks/b706f4b1-2831010e2dd2a749.js\",\"692\",\"static/chunks/73dfd616-512978e649b76761.js\",\"963\",\"static/chunks/963-4dffbac8d6a25e78.js\",\"679\",\"static/chunks/679-d1a6a81af7b7551a.js\",\"177\",\"static/chunks/app/layout-725688826163538f.js\"],\"default\"]\n5:I[622,[\"282\",\"static/chunks/dd507964-94e7a1153960be03.js\",\"533\",\"static/chunks/b706f4b1-2831010e2dd2a749.js\",\"692\",\"static/chunks/73dfd616-512978e649b76761.js\",\"963\",\"static/chunks/963-4dffbac8d6a25e78.js\",\"679\",\"static/chunks/679-d1a6a81af7b7551a.js\",\"177\",\"static/chunks/app/layout-725688826163538f.js\"],\"default\"]\n6:I[4752,[\"282\",\"static/chunks/dd507964-94e7a1153960be03.js\",\"533\",\"static/chunks/b706f4b1-2831010e2dd2a749.js\",\"692\",\"static/chunks/73dfd616-512978e649b76761.js\",\"963\",\"static/chunks/963-4dffbac8d6a25e78.js\",\"679\",\"static/chunks/679-d1a6a81af7b7551a.js\",\"177\",\"static/chunks/app/layout-725688826163538f.js\"],\"Main\"]\n7:I[7059,[],\"\"]\n8:I[3333,[\"39\",\"static/chunks/app/error-b5faafca2308edb7.js\"],\"default\"]\n9:I[646,[],\"\"]\nb:I[3713,[],\"OutletBoundary\"]\nd:I[3713,[],\"MetadataBoundary\"]\nf:I[3713,[],\"ViewportBoundary\"]\n11:I[9359,[],\"\"]\n1:HL[\"/_next/static/css/2e677674121e02c0.css\",\"style\"]\n"])</script><script>self.__next_f.push([1,"0:{\"P\":null,\"b\":\"gfNoNQW0gEMWLFXPuxaxo\",\"p\":\"\",\"c\":[\"\",\"simple-coin\",\"blockchain\",\"\"],\"i\":false,\"f\":[[[\"\",{\"children\":[\"simple-coin\",{\"children\":[[\"id\",\"blockchain\",\"d\"],{\"children\":[\"__PAGE__\",{}]}]}]},\"$undefined\",\"$undefined\",true],[\"\",[\"$\",\"$2\",\"c\",{\"children\":[[[\"$\",\"link\",\"0\",{\"rel\":\"stylesheet\",\"href\":\"/_next/static/css/2e677674121e02c0.css\",\"precedence\":\"next\",\"crossOrigin\":\"$undefined\",\"nonce\":\"$undefined\"}]],[\"$\",\"html\",null,{\"lang\":\"ko\",\"className\":\"__className_fde3a9 size-full\",\"children\":[\"$\",\"body\",null,{\"className\":\"relative size-full\",\"children\":[\"$\",\"$L3\",null,{\"children\":[[\"$\",\"header\",null,{\"className\":\"fixed top-0 z-50 flex h-12 w-full items-center border-gray-200 bg-white/95 pl-10 backdrop-blur-sm\",\"children\":[\"$\",\"$L4\",null,{\"children\":[\"$\",\"span\",null,{\"children\":\"JongMin Chae\"}]}]}],[\"$\",\"$L5\",null,{}],[\"$\",\"$L6\",null,{\"className\":\"overflow-x-hidden pt-12\",\"children\":[\"$\",\"$L7\",null,{\"parallelRouterKey\":\"children\",\"segmentPath\":[\"children\"],\"error\":\"$8\",\"errorStyles\":[],\"errorScripts\":[],\"template\":[\"$\",\"$L9\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":[[\"$\",\"title\",null,{\"children\":\"404: This page could not be found.\"}],[\"$\",\"div\",null,{\"style\":{\"fontFamily\":\"system-ui,\\\"Segoe UI\\\",Roboto,Helvetica,Arial,sans-serif,\\\"Apple Color Emoji\\\",\\\"Segoe UI Emoji\\\"\",\"height\":\"100vh\",\"textAlign\":\"center\",\"display\":\"flex\",\"flexDirection\":\"column\",\"alignItems\":\"center\",\"justifyContent\":\"center\"},\"children\":[\"$\",\"div\",null,{\"children\":[[\"$\",\"style\",null,{\"dangerouslySetInnerHTML\":{\"__html\":\"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}\"}}],[\"$\",\"h1\",null,{\"className\":\"next-error-h1\",\"style\":{\"display\":\"inline-block\",\"margin\":\"0 20px 0 0\",\"padding\":\"0 23px 0 0\",\"fontSize\":24,\"fontWeight\":500,\"verticalAlign\":\"top\",\"lineHeight\":\"49px\"},\"children\":\"404\"}],[\"$\",\"div\",null,{\"style\":{\"display\":\"inline-block\"},\"children\":[\"$\",\"h2\",null,{\"style\":{\"fontSize\":14,\"fontWeight\":400,\"lineHeight\":\"49px\",\"margin\":0},\"children\":\"This page could not be found.\"}]}]]}]}]],\"notFoundStyles\":[]}]}]]}]}]}]]}],{\"children\":[\"simple-coin\",[\"$\",\"$2\",\"c\",{\"children\":[null,[\"$\",\"$L7\",null,{\"parallelRouterKey\":\"children\",\"segmentPath\":[\"children\",\"simple-coin\",\"children\"],\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L9\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":\"$undefined\",\"notFoundStyles\":\"$undefined\"}]]}],{\"children\":[[\"id\",\"blockchain\",\"d\"],[\"$\",\"$2\",\"c\",{\"children\":[null,[\"$\",\"$L7\",null,{\"parallelRouterKey\":\"children\",\"segmentPath\":[\"children\",\"simple-coin\",\"children\",\"$0:f:0:1:2:children:2:children:0\",\"children\"],\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L9\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":\"$undefined\",\"notFoundStyles\":\"$undefined\"}]]}],{\"children\":[\"__PAGE__\",[\"$\",\"$2\",\"c\",{\"children\":[\"$La\",null,[\"$\",\"$Lb\",null,{\"children\":\"$Lc\"}]]}],{},null]},null]},null]},null],[\"$\",\"$2\",\"h\",{\"children\":[null,[\"$\",\"$2\",\"XOLY8Hin38hIFfrjGKzSJ\",{\"children\":[[\"$\",\"$Ld\",null,{\"children\":\"$Le\"}],[\"$\",\"$Lf\",null,{\"children\":\"$L10\"}],null]}]]}]]],\"m\":\"$undefined\",\"G\":[\"$11\",\"$undefined\"],\"s\":false,\"S\":true}\n"])</script><script>self.__next_f.push([1,"12:I[4963,[\"963\",\"static/chunks/963-4dffbac8d6a25e78.js\",\"713\",\"static/chunks/app/simple-coin/%5Bid%5D/page-180348f7e7a038cd.js\"],\"\"]\n13:I[4931,[\"963\",\"static/chunks/963-4dffbac8d6a25e78.js\",\"713\",\"static/chunks/app/simple-coin/%5Bid%5D/page-180348f7e7a038cd.js\"],\"default\"]\n"])</script><script>self.__next_f.push([1,"a:[[\"$\",\"div\",null,{\"className\":\"mx-auto max-w-6xl p-8\",\"children\":[[\"$\",\"article\",null,{\"className\":\"prose !max-w-full\",\"children\":[[\"$\",\"h1\",null,{\"children\":\"Simple Blockchain\"}],\"\\n\",[\"$\",\"h2\",null,{\"children\":\"블록체인이란?\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"블록체인이라고 하면 첨단 기술 같지만 그 개념은 간단합니다.\\r\\n한 줄 로 정리하자면\"}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"children\":\"해시값으로 연결된 블록을 쌓아가는 분산형 데이터베이스.\\n\"}]}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"블록체인을 이해하기 위해서는 블록, 해시값, 체인, 분산형 데이터베이스가 무엇인지 알아야 합니다.\"}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"블록\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"여러 거래(또는 기록)를 일정한 단위로 묶어 놓은 데이터 집합입니다.\\r\\n블록체인의 블록에는 자신의 해시값과 이전 블록의 해시값을 데이터로 가지고 있습니다.\"}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"className\":\"language-ts\",\"children\":\"class Block {\\r\\n  public index: number // 인덱스\\r\\n  public previousHash: string // 이전 블록의 해시 값\\r\\n  public timestamp: number // 생성 시간\\r\\n  public data: Transaction[] // 담고 싶은 데이터 (거래 내역)\\r\\n  public hash: string // 해당 블록의 해시값\\r\\n\\r\\n  constructor(\\r\\n    index: number,\\r\\n    previousHash: string,\\r\\n    timestamp: number,\\r\\n    data: Transaction[],\\r\\n    difficulty: number,\\r\\n    nonce: number,\\r\\n    hash: string,\\r\\n  ) {\\r\\n    this.index = index\\r\\n    this.previousHash = previousHash\\r\\n    this.timestamp = timestamp\\r\\n    this.data = data\\r\\n    this.hash = hash\\r\\n  }\\r\\n}\\n\"}]}],\"\\n\",[\"$\",\"p\",null,{\"children\":[\"블록체인에 첫번째로 생성된 블록은 이전 블록이 없겠죠? 그런 블록은 이전 블록의 해시값을 가지고 있지 않습니다. 이런 특별한 블록을 \",[\"$\",\"strong\",null,{\"children\":\"제네시스 블록\"}],\"이라고 합니다. 이는 하드 코딩으로 생성해야 합니다.\"]}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"className\":\"language-ts\",\"children\":\"const genesisBlock: Block = new Block(\\r\\n  0,\\r\\n  '',\\r\\n  1756716811,\\r\\n  'Let there be a block',\\r\\n  '38cdd2a4bdf21856e32e440da4ade0441e5b327f87981fe18dc63c4e1f0a2db6',\\r\\n)\\n\"}]}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"해시\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"데이터를 일정한 길이의 고정된 문자열로 변환하는 암호학적 함수입니다. 해시 함수의 핵심은 4 가지입니다.\"}],\"\\n\",[\"$\",\"h4\",null,{\"children\":\"1. 일가성 함수\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"해시 함수도 함수입니다. 입력값이 같으면 항상 동일한 출력값을 냅니다.\"}],\"\\n\",[\"$\",\"h4\",null,{\"children\":\"2. 고정된 길이 출력\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"해시 함수에는 어떤 데이터든지 들어갈 수 있습니다. 그러나 입력값에 상관없이 언제나 똑같은 길이의 값을 출력합니다.\\r\\nsimple coin은 비트코인과 같이 SHA256 해시 함수를 사용합니다. 작은 데이터를 넣든, 큰 데이터를 넣든 언제느 16진수(HEX)의 64글자가 결괏값으로 나옵니다.\\r\\n해시 함수는 고정된 길이를 출력하기 때문에 해싱을 입력값을 압축한 것으로 받아들여도 좋습니다. 즉 대표값으로 여길 수 있습니다. 이 때문에 해싱해서 나온 출력값을 메시지 다이제스트(Message Digest) 또는 지문(fingerprint)라고도 합니다.\"}],\"\\n\",[\"$\",\"h4\",null,{\"children\":\"3. 눈사태 효과\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"눈사태 효과란 입력값이 아주 조금만 바꿔도 완전히 다른 결괏값이 나오는 것을 의미합니다.\\r\\n입력값이 비슷해도 출력값에서는 유사성을 전혀 찾아볼 수 없습니다.\"}],\"\\n\",[\"$\",\"h4\",null,{\"children\":\"4. 단방향성\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"해시 함수의 가장 중요한 특징입니다. 출력값을 보고 입력값을 알아낼 수 없습니다. 이 특징 때문에 해시 함수는 보안 분야에서 많이 사용됩니다.\"}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"체인\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":[\"블록의 모든 데이터를 해싱한 값을 블록의 해시값으로 사용하고 대표값으로 활용합니다.\\r\\n각 블록은 이전 블록의 해시값을 포함하고 있기 때문에, 마치 \",[\"$\",\"strong\",null,{\"children\":\"체인\"}],\"처럼 끊어지지 않고 연결됩니다.\"]}],\"\\n\",[\"$\",\"p\",null,{\"children\":[\"$\",\"img\",null,{\"src\":\"https://github.com/user-attachments/assets/e9af0399-2883-4af5-98e6-a65939187d53\",\"alt\":\"블록\"}]}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"className\":\"language-ts\",\"children\":\"// index, previousHash, timestamp, data를 해싱\\r\\ncalculateHash(\\r\\n    index: number,\\r\\n    previousHash: string,\\r\\n    timestamp: number,\\r\\n    data: string\\r\\n): string =\u003e {\\r\\n    return CryptoJS.SHA256(index + previousHash + timestamp + data).toString();\\r\\n}\\r\\n\\r\\n\\r\\nconst generateBlock = (blockData: string) =\u003e {\\r\\n  const previousBlock: Block = getLatestBlock(); // 마지막 블록\\r\\n  const nextIndex: number = previousBlock.index + 1;\\r\\n  const nextTimestamp: number = new Date().getTime() / 1000;\\r\\n  const nextHash: string = calculateHash(\\r\\n    nextIndex,\\r\\n    previousBlock.hash,\\r\\n    nextTimestamp,\\r\\n    blockData\\r\\n  );\\r\\n  const newBlock: Block = new Block(\\r\\n    nextIndex,\\r\\n    previousBlock.hash,\\r\\n    nextTimestamp,\\r\\n    blockData,\\r\\n    nextHash\\r\\n  );\\r\\n  return newBlock;\\r\\n};\\r\\n\\n\"}]}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"블록의 해시값에는 \\\"이전 블록의 해시값\\\"이 들어가기 때문에 두 블록은 완전히 연결됩니다. 해당 해시값이 나오기 위해서는 이전 블록의 데이터를 품고 있을 수 밖에 없습니다.\\r\\n여기서 선후관계가 만들어지고, 각 블록의 연결 고리가 만들어집니다.\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"이러한 구조를 가지고 있기 때문에 특정 블록의 데이터를 위조하면 특정 블록 이후에 있는 모든 블록의 값을 변경해야 학디 때문에 위변조가 매우 어려워집니다.\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":[\"$\",\"img\",null,{\"src\":\"https://github.com/user-attachments/assets/27be6839-a5ae-4856-8f45-f6fb763b3592\",\"alt\":\"체인\"}]}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"비트코인을 만든 사토시 나카모토가 이 개념을 처음 백서에서 소개할 때는 블록체인이라는 말을 쓰지 않았지만 블록들이 체인처럼 연결되어 있기 때문에 이 말이 대중화가 되었다고 합니다.\"}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"분산형 데이터베이스\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"물리적으로는 여러 위치에 분산되어 있지만, 논리적으로는 하나의 통합된 데이터베이스 시스템처럼 동작하는 데이터베이스를 말합니다. 여러 대의 컴퓨터(노드 또는 인스턴스)가 네트워크를 통해 연결되어 있고, 각각의 컴퓨터가 모두 데이터를 저장하고 처리합니다. 서버를 두고 한 곳에서만 처리하지 않기 때문에 한 곳에서 문제가 생겨도 시스템 전체가 멈추지 않고 계속 돌아갑니다.\\r\\n즉, 해시로 연결되어 있는 블록 데이터들을 한 곳에 저장한 것이 아니라 여러 컴퓨터가 모두 가지고 있고 네트워크를 통해 서로 계속해서 통신하며 업데이트를 할 때, 블록체인이 완성됩니다.\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":[\"$\",\"img\",null,{\"src\":\"https://github.com/user-attachments/assets/941afa2b-fc63-4c3a-912f-a897cd0ee0e9\",\"alt\":\"블록체인\"}]}],\"\\n\",[\"$\",\"h2\",null,{\"children\":\"구현\"}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"블록체인 저장 및 무결성 검증\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"simple coin은 인메모리 자바스크립트 배열을 사용하여 블록체인을 저장합니다. 노드가 종료되면 데이터가 영구적으로 저장되지 않습니다.\"}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"className\":\"language-javascript\",\"children\":\"const blockchain: Block[] = [genesisBlock];\\n\"}]}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"무결성 검증\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":[\"언제든지 블록 또는 블록 체인의 \",[\"$\",\"strong\",null,{\"children\":\"무결성을 검증\"}],\"할 수 있어야 합니다.\\r\\n특히 다른 노드로부터 새로운 블록을 수신했을 때 이를 수락할지 여부를 결정해야 하기 때문에 매우 중요합니다.\"]}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"블록 검증\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"블록이 유효하려면 다음 조건이 충족되어야 합니다.\"}],\"\\n\",[\"$\",\"ul\",null,{\"children\":[\"\\n\",[\"$\",\"li\",null,{\"children\":[\"블록의 \",[\"$\",\"strong\",null,{\"children\":\"인덱스\"}],\"는 이전 블록의 인덱스보다 1이 커야 합니다.\"]}],\"\\n\",[\"$\",\"li\",null,{\"children\":[\"블록의 \",[\"$\",\"code\",null,{\"children\":\"previousHash\"}],\"는 이전 블록의 \",[\"$\",\"code\",null,{\"children\":\"hash\"}],\"와 일치해야 합니다.\"]}],\"\\n\",[\"$\",\"li\",null,{\"children\":[\"블록 자체의 \",[\"$\",\"code\",null,{\"children\":\"hash\"}],\"가 유효해야 합니다.\"]}],\"\\n\"]}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"className\":\"language-ts\",\"children\":\"const isValidBlock = (newBlock: Block, previousBlock: Block): boolean =\u003e {\\r\\n  if (!isValidBlockStructure(newBlock)) {\\r\\n    console.log('invalid structure')\\r\\n    return false\\r\\n  }\\r\\n\\r\\n  if (previousBlock.index + 1 !== newBlock.index) {\\r\\n    console.log('invalid index')\\r\\n    return false\\r\\n  }\\r\\n\\r\\n  if (previousBlock.hash !== newBlock.previousHash) {\\r\\n    console.log('invalid previousHash')\\r\\n    return false\\r\\n  }\\r\\n\\r\\n  if (calculateHashForBlock(newBlock) !== newBlock.hash) {\\r\\n    console.log('invalid hash')\\r\\n    return false\\r\\n  }\\r\\n  return true\\r\\n}\\n\"}]}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"블록체인 검증\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"제네시스 블록부터 시작하여 순차적으로 모든 블록이 유효한지 검사합니다.\"}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"className\":\"language-ts\",\"children\":\"const isValidChain = (blockchainToValidate: Block[]): boolean =\u003e {\\r\\n  if (!isValidGenesis(blockchainToValidate[0])) {\\r\\n    return false\\r\\n  }\\r\\n\\r\\n  for (let i = 1; i \u003c blockchainToValidate.length; i++) {\\r\\n    if (\\r\\n      !isValidNewBlock(blockchainToValidate[i], blockchainToValidate[i - 1])\\r\\n    ) {\\r\\n      return false\\r\\n    }\\r\\n  }\\r\\n  return true\\r\\n}\\n\"}]}],\"\\n\",[\"$\",\"h3\",null,{\"children\":\"충돌 상황(Fork)\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"충돌이 발생하는 경우(예: 두 노드가 동시에 블록 번호 72를 생성하는 경우) 블록 수가 가장 긴 체인을 선택합니다.\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":[\"$\",\"img\",null,{\"src\":\"https://github.com/user-attachments/assets/10d8c392-2077-462c-b6c6-f389941e6f84\",\"alt\":\"fork\"}]}],\"\\n\",[\"$\",\"pre\",null,{\"children\":[\"$\",\"code\",null,{\"className\":\"language-ts\",\"children\":\"const replaceChain = (newBlockchain: Block[]) =\u003e {\\r\\n  if (\\r\\n    isValidChain(newBlockchain) \u0026\u0026\\r\\n    newBlockchain.length \u003e getBlockchain().length\\r\\n  ) {\\r\\n    console.log(\\r\\n      'Received blockchain is valid. Replacing current blockchain with received blockchain',\\r\\n    )\\r\\n    blockchain = newBlockchain\\r\\n  } else {\\r\\n    console.log('Received blockchain invalid')\\r\\n  }\\r\\n}\\n\"}]}],\"\\n\",[\"$\",\"h2\",null,{\"children\":\"다음 챕터\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"다음 챕터에서는 노드를 연결해서 블록체인 네트워크를 만들어 분산형 데이터베이스를 구현해보겠습니다.\"}]]}],[\"$\",\"div\",null,{\"className\":\"mt-12 flex items-center justify-between border-t pt-8\",\"children\":[[\"$\",\"div\",null,{\"className\":\"w-32\"}],[\"$\",\"div\",null,{\"className\":\"text-sm text-gray-500\",\"children\":[1,\" / \",7]}],[\"$\",\"$L12\",null,{\"href\":\"/simple-coin/network\",\"className\":\"flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50\",\"children\":[\"다음 아티클\",[\"$\",\"svg\",null,{\"ref\":\"$undefined\",\"xmlns\":\"http://www.w3.org/2000/svg\",\"width\":24,\"height\":24,\"viewBox\":\"0 0 24 24\",\"fill\":\"none\",\"stroke\":\"currentColor\",\"strokeWidth\":2,\"strokeLinecap\":\"round\",\"strokeLinejoin\":\"round\",\"className\":\"lucide lucide-chevron-right size-4\",\"children\":[[\"$\",\"path\",\"mthhwq\",{\"d\":\"m9 18 6-6-6-6\"}],\"$undefined\"]}]]}]]}]]}],[\"$\",\"$L13\",null,{}]]\n"])</script><script>self.__next_f.push([1,"10:[[\"$\",\"meta\",\"0\",{\"name\":\"viewport\",\"content\":\"width=device-width, initial-scale=1\"}]]\ne:[[\"$\",\"meta\",\"0\",{\"charSet\":\"utf-8\"}],[\"$\",\"title\",\"1\",{\"children\":\"블록체인 \u0026 암호화폐 원리와 simple coin 구현 가이드 | JongMin Chae\"}],[\"$\",\"meta\",\"2\",{\"name\":\"description\",\"content\":\"JongMin Chae 개인 블록\"}],[\"$\",\"link\",\"3\",{\"rel\":\"icon\",\"href\":\"/images/spyglass.png\"}]]\n"])</script><script>self.__next_f.push([1,"c:null\n"])</script></body></html>
